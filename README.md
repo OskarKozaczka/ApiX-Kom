@@ -6,7 +6,7 @@ Aby korzystać z API należy:
 
 1. Utworzyć lokalną baze danych korzystając z pliku DBQuery
 2. W pliku konfiguracyjnym wkleić connection string do swojej bazy danych
-3. Dodać parametr [MultipleActiveResultSets=true] do connection string
+3. Dodać parametr `MultipleActiveResultSets=true` do connection string
 
 GET /api/Meetings/All - Zwraca Wszystkie spotkania wraz z zapisanymi uczestnikami
 
@@ -24,7 +24,7 @@ To use API you need to:
 
 1. Create a local database using the DBQuery file
 2. Paste the connection string to your database in the configuration file
-3. Add [MultipleActiveResultSets=true] parameter to connection string
+3. Add `MultipleActiveResultSets=true` parameter to connection string
 
 GET /api/Meetings/All - Returns all meetings with registered participants
 
