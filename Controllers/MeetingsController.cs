@@ -54,7 +54,7 @@ namespace ApiX_Kom.Controllers
         [HttpGet("{MeetingName}")]
         public Meeting Get(string MeetingName)
         {
-            string MeetingsQueryString = string.Format("SELECT * from Meetings WHERE MeetingName = '{0}'",MeetingName);
+            string MeetingsQueryString = string.Format("SELECT * FROM Meetings WHERE MeetingName = '{0}'",MeetingName);
 
             string connectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
             var Meeting = new Meeting();
@@ -91,41 +91,47 @@ namespace ApiX_Kom.Controllers
         [HttpPost("create/{MeetingName}")]
         public string Post(string MeetingName)
         {
+            string CheckIfExistQueryString = string.Format("SELECT * FROM Meetings WHERE MeetingName = '{0}'", MeetingName);
             string queryString = string.Format("INSERT INTO Meetings VALUES('{0}');", MeetingName);
             string connectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
 
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    SqlCommand command = new SqlCommand(queryString, connection);
+                    SqlCommand command = new SqlCommand(CheckIfExistQueryString, connection);
                     command.Connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader()) if (reader.HasRows) return "Meeting already exists";
+                    command = new SqlCommand(queryString, connection);
                     command.ExecuteNonQuery();
                 }
             }
-            return string.Format("Meeting: {0}, created succesfully", MeetingName);
+            return string.Format("Meeting: {0}, created successfully", MeetingName);
         }
 
 
         [HttpPost("register")]
         public string Post([FromQuery] string Meeting, [FromQuery] string name ,[FromQuery] string email)
         {
+            string CheckIfMeetingExistQueryString = string.Format("SELECT * FROM Meetings WHERE MeetingName = '{0}'", Meeting);
             string CheckLimitQueryString = string.Format("SELECT * FROM Participants WHERE Meeting = '{0}'", Meeting);
             string queryString = string.Format("INSERT INTO Participants VALUES('{0}','{1}','{2}');", Meeting,name,email);
             string connectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    SqlCommand command = new SqlCommand(CheckLimitQueryString, connection);
+                    SqlCommand command = new SqlCommand(CheckIfMeetingExistQueryString, connection);
                     command.Connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader()) if (!reader.HasRows) return "Meeting does not exist";
+                    command = new SqlCommand(CheckLimitQueryString, connection);
                     var NumberOfParcipants = 0;
                     using (SqlDataReader ParticipantsReader = command.ExecuteReader()) while (ParticipantsReader.Read()) NumberOfParcipants++;
 
-                    if (NumberOfParcipants == 25) return "Limit of Participants has been reached ";
+                    if (NumberOfParcipants == 25) return "Limit of participants has been reached";
                     else
                     {
                         command = new SqlCommand(queryString, connection);
                         command.ExecuteNonQuery();
-                        return "Participant Registered";
+                        return "Participant registered successfully";
                     }
                 }
             }
@@ -149,7 +155,7 @@ namespace ApiX_Kom.Controllers
                     command.ExecuteNonQuery();
                 }
             }
-            return string.Format("Meeting: {0}, deleted succesfully", MeetingName);
+            return string.Format("Meeting: {0}, deleted successfully", MeetingName);
         }
     }
 }
