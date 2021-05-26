@@ -26,7 +26,7 @@ To use API you need to:
 2. Paste the connection string to your database in the configuration file
 3. Add `MultipleActiveResultSets=true` parameter to connection string
 
-GET /api/Meetings/All - Returns all meetings with registered participants
+GET /api/Meetings/All - Returns all meetings along with the registered participants
 
 GET /api/Meetings/{MeetingName} - Returns a single meeting with the given name along with the registered participants
 
